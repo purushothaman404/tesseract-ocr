@@ -5,6 +5,10 @@ Kotlin Spring Boot application with Tesseract OCR operation
 
 ```./gradlew build```
 
+#### If Gradle wrapper issue then run
+
+```gradle wrapper```
+
 ### Build docker file
 
 ```docker build -t ocr-app .```
