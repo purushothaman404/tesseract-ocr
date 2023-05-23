@@ -11,12 +11,10 @@ RUN wget -q https://github.com/DanBloomberg/leptonica/archive/refs/tags/1.82.0.t
     && rm -f 1.82.0.tar.gz
 
 WORKDIR /opt/leptonica-1.82.0
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 RUN ./autogen.sh
 RUN ./configure
 RUN make && make install
 
-ENV PKG_CONFIG_PATH $PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
 RUN wget -q https://github.com/tesseract-ocr/tesseract/archive/5.2.0.tar.gz \
     && tar -zxvf 5.2.0.tar.gz -C /opt \
     && rm -f 5.2.0.tar.gz
@@ -34,24 +32,24 @@ FROM amazoncorretto:11
 
 WORKDIR /opt
 
-ARG ARG_LD_LIBRARY_PATH=/usr/local/lib
-ENV LD_LIBRARY_PATH ${ARG_LD_LIBRARY_PATH}
+ARG LD_LIBRARY_PATH=/usr/local/lib
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}
 ENV PKG_CONFIG_PATH ${LIBRARY_PATH}/pkgconfig
-ARG ARG_TESSDATA_PREFIX=/usr/local/share/tessdata
-ENV TESSDATA_PREFIX ${ARG_TESSDATA_PREFIX}
+ARG TESSDATA_PREFIX=/usr/local/share/tessdata
+ENV TESSDATA_PREFIX ${TESSDATA_PREFIX}
 
-COPY --from=build /usr/local/lib/libtesseract.so.5.0.2 ${ARG_LD_LIBRARY_PATH}/
-COPY --from=build /usr/local/lib/liblept.so.5.0.4 ${ARG_LD_LIBRARY_PATH}/
-COPY --from=build /lib64/libjpeg.so.62.3.0 ${ARG_LD_LIBRARY_PATH}/
-COPY --from=build /lib64/libtiff.so.5.2.0 ${ARG_LD_LIBRARY_PATH}/
-COPY --from=build /lib64/libwebp.so.4.0.2 ${ARG_LD_LIBRARY_PATH}/
-COPY --from=build /lib64/libopenjp2.so.2.4.0 ${ARG_LD_LIBRARY_PATH}/
-COPY --from=build /lib64/libgomp.so.1.0.0 ${ARG_LD_LIBRARY_PATH}/
-COPY --from=build /lib64/libjbig.so.2.0 ${ARG_LD_LIBRARY_PATH}/
+COPY --from=build /usr/local/lib/libtesseract.so.5.0.2 ${LD_LIBRARY_PATH}/
+COPY --from=build /usr/local/lib/liblept.so.5.0.4 ${LD_LIBRARY_PATH}/
+COPY --from=build /lib64/libjpeg.so.62.3.0 ${LD_LIBRARY_PATH}/
+COPY --from=build /lib64/libtiff.so.5.2.0 ${LD_LIBRARY_PATH}/
+COPY --from=build /lib64/libwebp.so.4.0.2 ${LD_LIBRARY_PATH}/
+COPY --from=build /lib64/libopenjp2.so.2.4.0 ${LD_LIBRARY_PATH}/
+COPY --from=build /lib64/libgomp.so.1.0.0 ${LD_LIBRARY_PATH}/
+COPY --from=build /lib64/libjbig.so.2.0 ${LD_LIBRARY_PATH}/
 
-COPY --from=build /opt/*.traineddata ${ARG_TESSDATA_PREFIX}/
+COPY --from=build /opt/*.traineddata ${TESSDATA_PREFIX}/
 
-RUN echo ${ARG_LD_LIBRARY_PATH} >> /etc/ld.so.conf
+RUN echo ${LD_LIBRARY_PATH} >> /etc/ld.so.conf
 RUN ldconfig
 
 WORKDIR /app
